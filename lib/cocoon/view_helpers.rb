@@ -24,7 +24,7 @@ module Cocoon
         f            = args[1]
         html_options = args[2] || {}
 
-        is_dynamic = f.object.new_record?
+        is_dynamic = defined? DataMapper ? f.object.new? : f.object.new_record?
         html_options[:class] = [html_options[:class], "remove_fields #{is_dynamic ? 'dynamic' : 'existing'}"].compact.join(' ')
         hidden_field_tag("#{f.object_name}[_destroy]") + link_to(name, '#', html_options)
       end
@@ -84,7 +84,11 @@ module Cocoon
     # will create new Comment with author "Admin"
 
     def create_object(f, association)
-      assoc = f.object.class.reflect_on_association(association)
+      assoc = if defined? DataMapper
+        f.object.class.relationships[association]
+      else
+        f.object.class.reflect_on_association(association)
+      end
 
       if assoc.collection?
         f.object.send(association).build
