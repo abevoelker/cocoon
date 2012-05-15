@@ -84,6 +84,9 @@ module Cocoon
     # will create new Comment with author "Admin"
 
     def create_object(f, association)
+      puts "CLASS IS #{f.object.class}"
+      puts "assoc is #{association}"
+      puts "reverse is #{QuestionAnswer.relationships[:question]}"
       assoc = if defined? DataMapper
         f.object.class.relationships[association]
       else
